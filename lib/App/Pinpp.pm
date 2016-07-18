@@ -18,6 +18,12 @@ You probably want to use L<pinpp> rather than this library directly.
 
 =cut
 
+=method run(@args)
+
+Runs the pinpoint preprocessor.
+
+=cut
+
 sub run {
     my $class = shift;
 
@@ -39,7 +45,7 @@ sub run {
     # @include <foo.pin> -> includes $INCLUDE_DIR/foo.pin
     # NB: Everything after the @include on a line will be removed.
 
-    my $content = $class->slurp($file);
+    my $content = $class->_slurp($file);
 
     # Remove // comments
 
@@ -86,12 +92,12 @@ slides running into each other between topics.
 
 sub include {
     my ($class, $dir, $include) = @_;
-    return $class->slurp(File::Spec->catdir($dir, $include))."--\n";
+    return $class->_slurp(File::Spec->catdir($dir, $include))."--\n";
 }
 
 # Slurps in a file. Not as fancy as File::Slurp, but saves us a
 # dependency.
-sub slurp {
+sub _slurp {
     my ($class, $file) = @_;
 
     local $/;
