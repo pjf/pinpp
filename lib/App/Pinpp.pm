@@ -69,6 +69,11 @@ sub run {
         # Otherwise just display our text
         say $content;
     }
+
+    # And we're done!
+
+    # Success!
+    return 0;
 }
 
 =method include($dir, $include)
