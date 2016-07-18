@@ -11,3 +11,31 @@ use App::Pinpp;
 # We're just a wrapper around our library.
 # Exit with whatever status code it tells us to use.
 exit ( App::Pinpp->run(@ARGV) );
+
+__END__
+
+=head1 SYNOPSIS
+
+    $ pinpp mytalk.pinpp > mytalk.pin
+
+=head1 DESCRIPTION
+
+This is a pre-processor for pinpoint, a presentation tool that uses text-based files as input.
+It will read a file, process any special directives (see below) inside it, and write the output
+on stdout.
+
+=head2 SYNTAX
+
+=head3 @include 
+
+    @include <autonomous-vehicles.pin>
+
+One of the main uses for C<pinpp> is to allow various topic arcs to be included in a larger
+one. By default, the C<topics/> directory will be searched for these files, but this can be
+modified by passing an argument to the C<-I> switch.
+
+=head2 EXAMPLES
+
+https://github.com/pjf/future-is-awesome is an example talk using pinpoint and pinpp.
+
+=cut
