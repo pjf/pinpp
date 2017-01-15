@@ -63,16 +63,14 @@ sub run {
     # reformat it as code.
 
     $content =~ s{
-        ^--[ \t]*\n             # Start of slide
-        (?<content>
-            (?:
-                [ \t]+[^\n]*\n  # Lines starting with spaces/tabs
-                |               # or...
-                \n              # blank lines. They're cool, too.
-            )+                  # And we can have a bunch of either.
-        )
-        ^--                     # End of slide.
-    }{-- [font=monospace 50px][text-align=left]\n$+{content}--}gsmx;
+        ^--[ \t]*\n         # Start of slide
+        (?:
+            [ \t]+[^\n]*\n  # Lines starting with spaces/tabs
+            |               # or...
+            \n              # blank lines. They're cool, too.
+        )+                  # And we can have a bunch of either.
+        ^--                 # End of slide.
+    }{_codeify(${^MATCH})}gsmxpe;   # USE ALL THE FLAGS!
 
     if (my $outputfile = $opts{o}) {
 
@@ -120,6 +118,59 @@ sub _slurp {
     open(my $fh, '<', $file);
 
     return <$fh>;
+}
+
+# Trims out start/end of slide.
+sub _trim_slide {
+    my ($slide) = @_;
+
+    $slide =~ s{^--[ \t]*\n}{};
+    $slide =~ s{--[ \t]*\n?$}{};
+
+    return $slide;
+}
+
+# Turns a slide into a code slide.
+sub _codeify {
+    my ($slide) = @_;
+
+    $slide = _trim_slide($slide);
+
+    my @lines = split(/\n/,$slide);
+
+    # Initial count.
+    my $min_spaces = _count_leading_spaces($lines[0]);
+
+    # Find the minimum number of spaces on any line.
+    # Double-checks the first line. Meh.
+    foreach my $line (@lines) {
+        my $spaces = _count_leading_spaces($line);
+
+        next if $spaces == 0;   # Blank lines don't count.
+
+        if ($spaces < $min_spaces) {
+            $min_spaces = $spaces;
+        }
+    }
+
+    # String of actual leading spaces.
+    my $space_leader = ' ' x $min_spaces;
+
+    # Trim off leading spaces.
+    $slide =~ s{^$space_leader}{}smg;
+
+    # Return our slide.
+    return "-- [font=monospace 50px][text-align=left]\n$slide--";
+}
+
+# Returns number of leading spaces on a line.
+# TODO: Handle tabs
+sub _count_leading_spaces {
+    my ($line) = @_;
+
+    $line =~ m{^(?<spaces>[ ]*)};
+
+    return length($+{spaces});
 }
 
 1;
