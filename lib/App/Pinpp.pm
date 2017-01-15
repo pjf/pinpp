@@ -59,6 +59,21 @@ sub run {
 
     $content =~ s{^--\n--}{--}gsm;
 
+    # If a slide has no styling at all, and consists only of indented text,
+    # reformat it as code.
+
+    $content =~ s{
+        ^--[ \t]*\n             # Start of slide
+        (?<content>
+            (?:
+                [ \t]+[^\n]*\n  # Lines starting with spaces/tabs
+                |               # or...
+                \n              # blank lines. They're cool, too.
+            )+                  # And we can have a bunch of either.
+        )
+        ^--                     # End of slide.
+    }{-- [font=monospace 50px][text-align=left]\n$+{content}--}gsmx;
+
     if (my $outputfile = $opts{o}) {
 
         # Iff we're producing a PDF, then remove speaker comments
