@@ -69,7 +69,7 @@ sub run {
             |               # or...
             \n              # blank lines. They're cool, too.
         )+                  # And we can have a bunch of either.
-        ^--                 # End of slide.
+        (?=^--)             # End of slide look-ahead.
     }{_codeify(${^MATCH})}gsmxpe;   # USE ALL THE FLAGS!
 
     if (my $outputfile = $opts{o}) {
@@ -131,6 +131,7 @@ sub _trim_slide {
 }
 
 # Turns a slide into a code slide.
+# Does not return trailing '--'
 sub _codeify {
     my ($slide) = @_;
 
@@ -160,7 +161,7 @@ sub _codeify {
     $slide =~ s{^$space_leader}{}smg;
 
     # Return our slide.
-    return "-- [font=monospace 50px][text-align=left]\n$slide--";
+    return "-- [font=monospace 50px][text-align=left]\n$slide";
 }
 
 # Returns number of leading spaces on a line.
